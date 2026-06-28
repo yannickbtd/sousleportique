@@ -1,14 +1,15 @@
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { Breathing } from '@/components/breathing';
-import { Button } from '@/components/button';
 import { MeditationPlayer } from '@/components/meditation-player';
+import { PremiumGate } from '@/components/premium-gate';
 import { ContentScroll } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { AUDIO_SOURCES, getMeditation } from '@/content/meditations';
 import { Fonts, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { usePremium } from '@/store/settings';
 
 function minutesFromLabel(label: string): number {
   const n = parseInt(label, 10);
@@ -17,8 +18,8 @@ function minutesFromLabel(label: string): number {
 
 export default function MeditationScreen() {
   const { meditationId } = useLocalSearchParams<{ meditationId: string }>();
-  const router = useRouter();
   const theme = useTheme();
+  const isPremium = usePremium();
   const med = getMeditation(meditationId);
 
   if (!med) {
@@ -30,20 +31,11 @@ export default function MeditationScreen() {
     );
   }
 
-  if (med.premium) {
+  if (med.premium && !isPremium) {
     return (
       <ContentScroll>
         <Stack.Screen options={{ title: med.titre }} />
-        <View style={[styles.gate, { backgroundColor: theme.accentSoft, borderColor: theme.border }]}>
-          <ThemedText style={styles.gateGlyph}>🔒</ThemedText>
-          <ThemedText style={[styles.gateTitle, { fontFamily: Fonts.serif, color: theme.text }]}>
-            Méditation Premium
-          </ThemedText>
-          <ThemedText themeColor="textSecondary" style={styles.gateText}>
-            {med.description} Accède à toutes les méditations avec l’abonnement « Sous le portique ».
-          </ThemedText>
-          <Button label="Découvrir Premium" onPress={() => router.push('/profil')} />
-        </View>
+        <PremiumGate kind="Méditation" description={med.description} />
       </ContentScroll>
     );
   }

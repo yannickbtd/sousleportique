@@ -1,15 +1,16 @@
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { ContentScroll } from '@/components/screen';
+import { PremiumGate } from '@/components/premium-gate';
 import { ProgressBar } from '@/components/progress-bar';
 import { ThemedText } from '@/components/themed-text';
 import { getModule } from '@/content/modules';
-import { Fonts, Radius, Spacing } from '@/constants/theme';
+import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useIsLessonComplete, useModuleProgress } from '@/store/progress';
+import { usePremium } from '@/store/settings';
 
 function LessonRow({ moduleId, lessonId, titre, duree, onPress }: {
   moduleId: string;
@@ -28,6 +29,7 @@ export default function ModuleDetailScreen() {
   const { moduleId } = useLocalSearchParams<{ moduleId: string }>();
   const router = useRouter();
   const theme = useTheme();
+  const isPremium = usePremium();
   const mod = getModule(moduleId);
   const { done, total, ratio } = useModuleProgress(moduleId ?? '');
 
@@ -40,21 +42,11 @@ export default function ModuleDetailScreen() {
     );
   }
 
-  if (mod.premium) {
+  if (mod.premium && !isPremium) {
     return (
       <ContentScroll>
         <Stack.Screen options={{ title: mod.titre }} />
-        <View style={[styles.gate, { backgroundColor: theme.accentSoft, borderColor: theme.border }]}>
-          <ThemedText style={styles.gateGlyph}>🔒</ThemedText>
-          <ThemedText style={[styles.gateTitle, { fontFamily: Fonts.serif, color: theme.text }]}>
-            Contenu Premium
-          </ThemedText>
-          <ThemedText themeColor="textSecondary" style={styles.gateText}>
-            Ce module fait partie de l’abonnement « Sous le portique ». Débloque tous les modules,
-            exercices avancés et méditations.
-          </ThemedText>
-          <Button label="Découvrir Premium" onPress={() => router.push('/profil')} />
-        </View>
+        <PremiumGate kind="Module" description={mod.resume} />
       </ContentScroll>
     );
   }
@@ -136,14 +128,4 @@ const styles = StyleSheet.create({
   },
   term: { gap: Spacing.half },
   termName: { fontSize: 15, fontWeight: '700' },
-  gate: {
-    borderRadius: Radius.lg,
-    borderWidth: StyleSheet.hairlineWidth,
-    padding: Spacing.five,
-    alignItems: 'center',
-    gap: Spacing.three,
-  },
-  gateGlyph: { fontSize: 40 },
-  gateTitle: { fontSize: 24, fontWeight: '600' },
-  gateText: { textAlign: 'center' },
 });

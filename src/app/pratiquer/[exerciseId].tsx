@@ -5,12 +5,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/button';
 import { Field } from '@/components/field';
+import { PremiumGate } from '@/components/premium-gate';
 import { ProgressBar } from '@/components/progress-bar';
+import { ContentScroll } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { getExercise } from '@/content/exercises';
-import { BottomTabInset, Fonts, MaxContentWidth, Radius, Spacing } from '@/constants/theme';
+import { BottomTabInset, Fonts, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useJournal } from '@/store/journal';
+import { usePremium } from '@/store/settings';
 
 export default function ExerciseScreen() {
   const { exerciseId } = useLocalSearchParams<{ exerciseId: string }>();
@@ -18,6 +21,7 @@ export default function ExerciseScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const add = useJournal((s) => s.add);
+  const isPremium = usePremium();
   const exercise = getExercise(exerciseId);
 
   const [stepIndex, setStepIndex] = useState(0);
@@ -25,30 +29,19 @@ export default function ExerciseScreen() {
 
   if (!exercise) {
     return (
-      <View style={[styles.center, { backgroundColor: theme.background }]}>
+      <ContentScroll>
         <Stack.Screen options={{ title: 'Exercice' }} />
         <ThemedText>Exercice introuvable.</ThemedText>
-      </View>
+      </ContentScroll>
     );
   }
 
-  if (exercise.premium) {
+  if (exercise.premium && !isPremium) {
     return (
-      <ScrollView
-        style={{ backgroundColor: theme.background }}
-        contentContainerStyle={styles.gateScroll}>
+      <ContentScroll>
         <Stack.Screen options={{ title: exercise.titre }} />
-        <View style={[styles.gate, { backgroundColor: theme.accentSoft, borderColor: theme.border }]}>
-          <ThemedText style={styles.gateGlyph}>🔒</ThemedText>
-          <ThemedText style={[styles.gateTitle, { fontFamily: Fonts.serif, color: theme.text }]}>
-            Exercice Premium
-          </ThemedText>
-          <ThemedText themeColor="textSecondary" style={styles.gateText}>
-            {exercise.intro} Cet exercice fait partie de l’abonnement « Sous le portique ».
-          </ThemedText>
-          <Button label="Découvrir Premium" onPress={() => router.push('/profil')} />
-        </View>
-      </ScrollView>
+        <PremiumGate kind="Exercice" description={exercise.intro} />
+      </ContentScroll>
     );
   }
 
@@ -130,7 +123,6 @@ export default function ExerciseScreen() {
 }
 
 const styles = StyleSheet.create({
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   scroll: { flexDirection: 'row', justifyContent: 'center', paddingHorizontal: Spacing.four, paddingTop: Spacing.three },
   inner: { width: '100%', maxWidth: MaxContentWidth, gap: Spacing.three },
   progress: { gap: Spacing.one },
@@ -138,15 +130,4 @@ const styles = StyleSheet.create({
   stepTitle: { fontSize: 24, fontWeight: '600', marginTop: Spacing.two },
   instruction: { fontSize: 17, lineHeight: 26 },
   actions: { gap: Spacing.two, marginTop: Spacing.three },
-  gateScroll: { padding: Spacing.four },
-  gate: {
-    borderRadius: Radius.lg,
-    borderWidth: StyleSheet.hairlineWidth,
-    padding: Spacing.five,
-    alignItems: 'center',
-    gap: Spacing.three,
-  },
-  gateGlyph: { fontSize: 40 },
-  gateTitle: { fontSize: 24, fontWeight: '600' },
-  gateText: { textAlign: 'center' },
 });

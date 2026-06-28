@@ -8,9 +8,11 @@ import { ThemedText } from '@/components/themed-text';
 import { MODULES } from '@/content/modules';
 import { Spacing } from '@/constants/theme';
 import { useModuleProgress } from '@/store/progress';
+import { usePremium } from '@/store/settings';
 
 function ModuleCard({ id }: { id: string }) {
   const router = useRouter();
+  const isPremium = usePremium();
   const mod = MODULES.find((m) => m.id === id)!;
   const { done, total, ratio } = useModuleProgress(id);
 
@@ -20,10 +22,10 @@ function ModuleCard({ id }: { id: string }) {
       title={mod.titre}
       subtitle={mod.resume}
       badge={mod.premium ? 'Premium' : 'Gratuit'}
-      locked={mod.premium}
+      locked={mod.premium && !isPremium}
       onPress={() => router.push({ pathname: '/apprendre/[moduleId]', params: { moduleId: id } })}
       footer={
-        !mod.premium && total > 0 ? (
+        (!mod.premium || isPremium) && total > 0 ? (
           <View style={styles.progress}>
             <ProgressBar ratio={ratio} />
             <ThemedText themeColor="textSecondary" type="small">

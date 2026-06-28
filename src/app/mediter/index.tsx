@@ -4,9 +4,11 @@ import { Card } from '@/components/card';
 import { Screen } from '@/components/screen';
 import { MEDITATIONS } from '@/content/meditations';
 import { useProgress } from '@/store/progress';
+import { usePremium } from '@/store/settings';
 
 function MeditationCard({ id }: { id: string }) {
   const router = useRouter();
+  const isPremium = usePremium();
   const med = MEDITATIONS.find((m) => m.id === id)!;
   const done = useProgress((s) => Boolean(s.meditationsDone[id]));
 
@@ -16,7 +18,7 @@ function MeditationCard({ id }: { id: string }) {
       title={med.titre}
       subtitle={`${med.kind === 'respiration' ? 'Respiration' : 'Audio'} · ${med.dureeLabel}`}
       badge={med.premium ? 'Premium' : 'Gratuit'}
-      locked={med.premium}
+      locked={med.premium && !isPremium}
       onPress={() =>
         router.push({ pathname: '/mediter/[meditationId]', params: { meditationId: id } })
       }

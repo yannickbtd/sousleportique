@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 import { useStreak, useTotals } from '@/store/progress';
+import { usePremium } from '@/store/settings';
 
 function Stat({ value, label }: { value: string; label: string }) {
   const theme = useTheme();
@@ -25,6 +26,7 @@ export default function ProfilScreen() {
   const router = useRouter();
   const { lessons, meditations } = useTotals();
   const streak = useStreak();
+  const isPremium = usePremium();
 
   return (
     <Screen title="Profil" subtitle="Ta progression et tes réglages.">
@@ -37,9 +39,14 @@ export default function ProfilScreen() {
 
       <Card
         glyph="✦"
-        title="Passer à Premium"
-        subtitle="Toutes les méditations et les exercices avancés. Essai gratuit 7 jours."
-        badge="Découvrir"
+        title={isPremium ? 'Membre Premium' : 'Passer à Premium'}
+        subtitle={
+          isPremium
+            ? 'Merci ! Tout le contenu est débloqué.'
+            : 'Toutes les méditations et les exercices avancés. Essai gratuit 7 jours.'
+        }
+        badge={isPremium ? 'Gérer' : 'Découvrir'}
+        onPress={() => router.push('/profil/premium')}
       />
 
       <ThemedText style={styles.sectionTitle}>Réglages</ThemedText>

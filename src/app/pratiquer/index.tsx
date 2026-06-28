@@ -5,10 +5,12 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { EXERCISES } from '@/content/exercises';
 import { useJournal } from '@/store/journal';
+import { usePremium } from '@/store/settings';
 
 export default function PratiquerScreen() {
   const router = useRouter();
   const count = useJournal((s) => s.entries.length);
+  const isPremium = usePremium();
 
   return (
     <Screen
@@ -30,7 +32,7 @@ export default function PratiquerScreen() {
           title={e.titre}
           subtitle={`${e.source} · ${e.duree}`}
           badge={e.premium ? 'Premium' : 'Gratuit'}
-          locked={e.premium}
+          locked={e.premium && !isPremium}
           onPress={() =>
             router.push({ pathname: '/pratiquer/[exerciseId]', params: { exerciseId: e.id } })
           }
