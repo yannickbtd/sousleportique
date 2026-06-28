@@ -57,8 +57,26 @@
 
 ---
 
+## Sprint 4 — Pilier « Méditer » ✅
+
+**Réalisé :**
+- **Lecteur audio** (`expo-audio`, `src/components/meditation-player.tsx`) : play/pause, saut ±15 s, barre de progression, temps écoulé/total, fin de séance comptabilisée, indicateur « disponible hors-ligne ».
+- **Respiration carrée animée** (`react-native-reanimated`, `src/components/breathing.tsx`) : cercle qui enfle/dégonfle, phases Inspire/Retiens/Expire (4-4-4-4), minuteur, comptabilisée.
+- **Stack Méditer** (`src/app/mediter/`) : catalogue → lecteur audio / respiration / gate Premium.
+- **Contenu** (`src/content/meditations.ts`) : méditations `audio` et `respiration` ; `AUDIO_SOURCES` embarqués (offline par nature), prêt pour les fichiers de l'auteur.
+- **Placeholder** `assets/audio/instant.m4a` (silence 180 s, généré via afconvert) pour tester le lecteur en Expo Go — à remplacer par le vrai enregistrement (même nom).
+- Suivi des méditations dans le store (compteur sur le Profil) ; cartes Accueil reliées.
+
+**Dépendances ajoutées :** `expo-audio`, `expo-file-system`. Plugin `expo-audio` ajouté à `app.json`.
+
+**Note offline** : les méditations embarquées sont offline par nature ; le téléchargement de contenu **distant** (Supabase Storage) sera branché au Sprint 6 (CMS).
+
+**Qualité :** `tsc` clean ✅ · `expo lint` clean ✅ · `expo export` (iOS) sans erreur ✅.
+
+---
+
 ## Prochains sprints (cf. planning §5 du rapport)
-- S4 Méditer (lecteur audio + offline + respiration animée)
+- S5 Onboarding + notifications + dashboard/streak réels
 - S4 Méditer (lecteur audio + offline + respiration animée)
 - S5 Onboarding + notifications + dashboard/streak réels
 - S6 Paywall + RevenueCat + CMS Supabase
