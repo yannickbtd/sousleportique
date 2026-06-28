@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { Card } from '@/components/card';
@@ -14,23 +15,26 @@ function salutation(date = new Date()): string {
   return 'Bonsoir';
 }
 
-/** Rituel suggéré selon l'heure (matin avant 12h, sinon soir). */
+/** Rituel suggéré selon l'heure (matin avant 14h, sinon soir). */
 function rituelDuMoment(date = new Date()) {
   return date.getHours() < 14
     ? {
         glyph: '🌅',
         title: 'Rituel du matin',
         subtitle: 'Préparer la journée : anticiper les obstacles, fixer une intention vertueuse.',
+        exerciceId: 'matin',
       }
     : {
         glyph: '🌙',
         title: 'Rituel du soir',
         subtitle: "Examen de conscience : qu'ai-je bien fait ? que puis-je corriger demain ?",
+        exerciceId: 'examen-soir',
       };
 }
 
 export default function AccueilScreen() {
   const theme = useTheme();
+  const router = useRouter();
   const citation = citationDuJour();
   const rituel = rituelDuMoment();
 
@@ -56,7 +60,18 @@ export default function AccueilScreen() {
         </View>
       }>
       <ThemedText style={styles.sectionTitle}>Aujourd&apos;hui</ThemedText>
-      <Card glyph={rituel.glyph} title={rituel.title} subtitle={rituel.subtitle} badge="Commencer" />
+      <Card
+        glyph={rituel.glyph}
+        title={rituel.title}
+        subtitle={rituel.subtitle}
+        badge="Commencer"
+        onPress={() =>
+          router.push({
+            pathname: '/pratiquer/[exerciseId]',
+            params: { exerciseId: rituel.exerciceId },
+          })
+        }
+      />
 
       <Card
         glyph="📿"
