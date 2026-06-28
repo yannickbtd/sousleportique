@@ -39,8 +39,26 @@
 
 ---
 
+## Sprint 3 — Pilier « Pratiquer » ✅
+
+**Réalisé :**
+- **Exercices guidés pas-à-pas** (`src/content/exercises.ts`) : *Préparation du matin*, *Dichotomie du contrôle*, *Examen du soir* (gratuits) ; *Premeditatio malorum*, *Vue d'en haut* (premium, gate). Runner avec progression, saisie par étape, sauvegarde auto dans le journal (`src/app/pratiquer/[exerciseId].tsx`).
+- **Journal personnel chiffré** : clé AES aléatoire (`expo-crypto`) conservée dans `expo-secure-store`, entrées chiffrées en AES (`crypto-js`) avant écriture dans AsyncStorage — **compatible Expo Go**. Jamais persisté en clair. (`src/lib/crypto.ts`, `src/store/journal.ts`)
+- **Stack Pratiquer** : catalogue → exercice / journal (liste, nouvelle entrée libre, détail + suppression confirmée).
+- Déchiffrement/chargement du journal au démarrage (`_layout`).
+- Carte « Rituel du moment » de l'Accueil reliée au bon exercice (matin/soir).
+- Nouveaux : composant `Field`, helper `formatDate` (FR).
+
+**Dépendances ajoutées :** `expo-secure-store`, `expo-crypto`, `crypto-js` (+ `@types/crypto-js`). Plugin `expo-secure-store` ajouté à `app.json`.
+
+**Décision d'archi** : on reste sur **AsyncStorage chiffré** (Expo Go) ; migration vers SQLite chiffré différée.
+
+**Qualité :** `tsc` clean ✅ · `expo lint` clean ✅ · `expo export` (iOS) sans erreur ✅.
+
+---
+
 ## Prochains sprints (cf. planning §5 du rapport)
-- S3 Pratiquer (exercice guidé pas-à-pas, journal chiffré SQLite)
+- S4 Méditer (lecteur audio + offline + respiration animée)
 - S4 Méditer (lecteur audio + offline + respiration animée)
 - S5 Onboarding + notifications + dashboard/streak réels
 - S6 Paywall + RevenueCat + CMS Supabase
