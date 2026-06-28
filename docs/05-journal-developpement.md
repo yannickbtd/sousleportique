@@ -20,8 +20,26 @@
 
 **Qualité :** `tsc --noEmit` clean ✅ · `expo lint` clean ✅ · `expo export` (iOS) bundle 1468 modules sans erreur ✅.
 
-**Reste pour les prochains sprints** (cf. planning §5 du rapport) :
-- S2 Apprendre (lecteur de leçon, quiz, progression)
+---
+
+## Sprint 2 — Pilier « Apprendre » ✅
+
+**Réalisé :**
+- **Modèle de contenu** (`src/content/modules.ts`) : modules → leçons (blocs titre/paragraphe/citation) + glossaire + quiz. Module **Fondations** entièrement rédigé (4 leçons, glossaire de 5 termes, quiz de 4 questions) en FR original. Modules *Figures* & *Concepts* en premium (gate).
+- **Navigation Apprendre** en Stack (`src/app/apprendre/`) : liste des modules → détail module → leçon → quiz.
+- **Lecteur de leçon** : rendu des blocs (titres serif, paragraphes, citations encadrées) + bouton « Marquer comme terminé ».
+- **Quiz interactif** : sélection, validation, correction colorée, explications, score, reprise. Meilleur score persisté.
+- **Suivi de progression** (`src/store/progress.ts`, Zustand + AsyncStorage, compatible Expo Go) : barres de progression par module, compteur de leçons sur le Profil.
+- **Gate Premium** pour les modules verrouillés (CTA vers Profil, paywall réel en S6).
+- Nouveaux composants : `Button`, `ProgressBar`, `ContentScroll`.
+
+**Dépendances ajoutées :** `zustand@5`, `@react-native-async-storage/async-storage`.
+
+**Qualité :** `tsc` clean ✅ · `expo lint` clean ✅ · `expo export` (iOS) bundle sans erreur ✅.
+
+---
+
+## Prochains sprints (cf. planning §5 du rapport)
 - S3 Pratiquer (exercice guidé pas-à-pas, journal chiffré SQLite)
 - S4 Méditer (lecteur audio + offline + respiration animée)
 - S5 Onboarding + notifications + dashboard/streak réels
