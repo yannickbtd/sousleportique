@@ -91,8 +91,27 @@
 
 ---
 
+## Sprint 6 — Paywall & déblocage premium (MOCK) ✅
+
+**Décision** : paywall en **mock** d'abord (100 % testable en Expo Go) ; le vrai RevenueCat + dev build seront branchés ensuite.
+
+**Réalisé :**
+- **Couche d'abonnement isolée** (`src/lib/purchases.ts`) : `purchase` / `restore` / `cancel` simulés. Interface pensée pour être remplacée par `react-native-purchases` (RevenueCat) **sans toucher l'UI**.
+- **État premium persisté** (`src/store/settings.ts`) : `premiumActive`, `premiumPlan`, `premiumSince` + hook `usePremium()`.
+- **Écran paywall** (`src/app/profil/premium.tsx`) : offres mensuel/annuel (sélection), essai 7 j, liste d'avantages, bouton d'abonnement (loader), restaurer, bannière « démo », état membre + résiliation démo.
+- **`PremiumGate` réutilisable** (`src/components/premium-gate.tsx`) ; déblocage **réactif** du contenu premium (modules, exercices, méditations) selon l'abonnement.
+- Catalogues : cadenas conditionnés à `usePremium()` ; carte Profil reliée au paywall (état « Membre Premium » si abonné).
+
+**À faire au passage RevenueCat (dev build)** : installer `react-native-purchases`, configurer produits (App Store Connect / Play Console) + RevenueCat, remplacer l'implémentation de `purchases.ts`, dériver `premiumActive` des entitlements.
+
+**Qualité :** `tsc` clean ✅ · `expo lint` clean ✅ · `expo export` (iOS) sans erreur ✅.
+
+---
+
 ## Prochains sprints (cf. planning §5 du rapport)
-- S6 Paywall + RevenueCat + CMS Supabase
+- S7 CMS Supabase (contenu distant + offline) — compatible Expo Go
+- Puis dev build : RevenueCat réel, notifications complètes
+- S8 Polish, a11y, tests E2E, builds EAS & soumission stores
 - S4 Méditer (lecteur audio + offline + respiration animée)
 - S5 Onboarding + notifications + dashboard/streak réels
 - S6 Paywall + RevenueCat + CMS Supabase
