@@ -7,6 +7,7 @@ import { ThemedText } from '@/components/themed-text';
 import { citationDuJour } from '@/content/citations';
 import { Fonts, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useStreak } from '@/store/progress';
 
 function salutation(date = new Date()): string {
   const h = date.getHours();
@@ -37,6 +38,7 @@ export default function AccueilScreen() {
   const router = useRouter();
   const citation = citationDuJour();
   const rituel = rituelDuMoment();
+  const streak = useStreak();
 
   return (
     <Screen
@@ -87,9 +89,13 @@ export default function AccueilScreen() {
         <ThemedText themeColor="textSecondary" type="small">
           Série en cours
         </ThemedText>
-        <ThemedText style={[styles.streakValue, { color: theme.accent }]}>0 jour</ThemedText>
+        <ThemedText style={[styles.streakValue, { color: theme.accent }]}>
+          {streak} jour{streak > 1 ? 's' : ''}
+        </ThemedText>
         <ThemedText themeColor="textSecondary" type="small">
-          Commence un rituel pour démarrer ta série.
+          {streak > 0
+            ? 'Continue ainsi — la constance fait le sage.'
+            : 'Commence un rituel pour démarrer ta série.'}
         </ThemedText>
       </View>
     </Screen>

@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { getModule } from '@/content/modules';
+import { dayKey } from '@/lib/date';
 
 function lessonKey(moduleId: string, lessonId: string) {
   return `${moduleId}:${lessonId}`;
@@ -17,6 +18,8 @@ type ProgressState = {
   quizScores: Record<string, number>; // moduleId -> meilleur score (0..1)
   meditationsDone: Record<string, true>; // meditationId -> true (au moins une fois)
   meditationSessions: number; // nombre total de séances de méditation
+  activeDays: Record<string, true>; // jours avec au moins une activité (clé AAAA-MM-JJ)
+  recordActivity: () => void;
   markLessonComplete: (moduleId: string, lessonId: string) => void;
   setQuizScore: (moduleId: string, score: number) => void;
   markMeditationDone: (meditationId: string) => void;
@@ -30,9 +33,17 @@ export const useProgress = create<ProgressState>()(
       quizScores: {},
       meditationsDone: {},
       meditationSessions: 0,
+      activeDays: {},
+      recordActivity: () =>
+        set((s) => {
+          const k = dayKey();
+          if (s.activeDays[k]) return s;
+          return { activeDays: { ...s.activeDays, [k]: true } };
+        }),
       markLessonComplete: (moduleId, lessonId) =>
         set((s) => ({
           completedLessons: { ...s.completedLessons, [lessonKey(moduleId, lessonId)]: true },
+          activeDays: { ...s.activeDays, [dayKey()]: true },
         })),
       setQuizScore: (moduleId, score) =>
         set((s) => ({
@@ -40,14 +51,22 @@ export const useProgress = create<ProgressState>()(
             ...s.quizScores,
             [moduleId]: Math.max(score, s.quizScores[moduleId] ?? 0),
           },
+          activeDays: { ...s.activeDays, [dayKey()]: true },
         })),
       markMeditationDone: (meditationId) =>
         set((s) => ({
           meditationsDone: { ...s.meditationsDone, [meditationId]: true },
           meditationSessions: s.meditationSessions + 1,
+          activeDays: { ...s.activeDays, [dayKey()]: true },
         })),
       reset: () =>
-        set({ completedLessons: {}, quizScores: {}, meditationsDone: {}, meditationSessions: 0 }),
+        set({
+          completedLessons: {},
+          quizScores: {},
+          meditationsDone: {},
+          meditationSessions: 0,
+          activeDays: {},
+        }),
     }),
     {
       name: 'slp-progress',
@@ -79,4 +98,22 @@ export function useTotals(): { lessons: number; meditations: number } {
     lessons: Object.keys(s.completedLessons).length,
     meditations: s.meditationSessions,
   }));
+}
+
+/** Série de jours consécutifs d'activité, se terminant aujourd'hui ou hier. */
+export function useStreak(): number {
+  return useProgress((s) => {
+    const has = (d: Date) => Boolean(s.activeDays[dayKey(d)]);
+    const cursor = new Date();
+    if (!has(cursor)) {
+      cursor.setDate(cursor.getDate() - 1);
+      if (!has(cursor)) return 0;
+    }
+    let streak = 0;
+    while (has(cursor)) {
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    return streak;
+  });
 }

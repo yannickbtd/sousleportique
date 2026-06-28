@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { Card } from '@/components/card';
@@ -5,7 +6,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
-import { useTotals } from '@/store/progress';
+import { useStreak, useTotals } from '@/store/progress';
 
 function Stat({ value, label }: { value: string; label: string }) {
   const theme = useTheme();
@@ -21,13 +22,15 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 export default function ProfilScreen() {
   const theme = useTheme();
+  const router = useRouter();
   const { lessons, meditations } = useTotals();
+  const streak = useStreak();
 
   return (
     <Screen title="Profil" subtitle="Ta progression et tes réglages.">
       <View
         style={[styles.stats, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
-        <Stat value="0" label="Série (jours)" />
+        <Stat value={String(streak)} label="Série (jours)" />
         <Stat value={String(lessons)} label="Leçons" />
         <Stat value={String(meditations)} label="Méditations" />
       </View>
@@ -40,8 +43,12 @@ export default function ProfilScreen() {
       />
 
       <ThemedText style={styles.sectionTitle}>Réglages</ThemedText>
-      <Card glyph="🔔" title="Rappels" subtitle="Notifications du matin et du soir" />
-      <Card glyph="🎨" title="Apparence" subtitle="Thème clair / sombre" />
+      <Card
+        glyph="🔔"
+        title="Rappels"
+        subtitle="Notifications du matin et du soir"
+        onPress={() => router.push('/profil/rappels')}
+      />
       <Card glyph="🔒" title="Confidentialité" subtitle="Données & journal" />
       <Card glyph="📖" title="Sources & bibliographie" subtitle="Hadot, Robertson, StoaGallica…" />
     </Screen>

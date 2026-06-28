@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 
 import { decryptJSON, encryptJSON } from '@/lib/crypto';
+import { useProgress } from '@/store/progress';
 
 const STORAGE_KEY = 'slp.journal.v1';
 
@@ -53,6 +54,7 @@ export const useJournal = create<JournalState>((set, get) => ({
     const entries = [created, ...get().entries];
     set({ entries });
     await persist(entries);
+    useProgress.getState().recordActivity();
     return created;
   },
   remove: async (id) => {
