@@ -52,6 +52,26 @@ export function Screen({ title, subtitle, intro, children }: ScreenProps) {
   );
 }
 
+/**
+ * Variante pour les écrans poussés sous un en-tête de Stack (leçon, quiz, détail
+ * de module) : pas d'inset haut (l'en-tête s'en charge), largeur max centrée.
+ */
+export function ContentScroll({ children }: { children: ReactNode }) {
+  const insets = useSafeAreaInsets();
+  const theme = useTheme();
+
+  return (
+    <ScrollView
+      style={[styles.scroll, { backgroundColor: theme.background }]}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: Spacing.three, paddingBottom: insets.bottom + BottomTabInset + Spacing.four },
+      ]}>
+      <View style={styles.inner}>{children}</View>
+    </ScrollView>
+  );
+}
+
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
   content: {

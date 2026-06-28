@@ -5,6 +5,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
+import { useTotals } from '@/store/progress';
 
 function Stat({ value, label }: { value: string; label: string }) {
   const theme = useTheme();
@@ -20,13 +21,14 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 export default function ProfilScreen() {
   const theme = useTheme();
+  const { lessons } = useTotals();
 
   return (
     <Screen title="Profil" subtitle="Ta progression et tes réglages.">
       <View
         style={[styles.stats, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
         <Stat value="0" label="Série (jours)" />
-        <Stat value="0" label="Exercices" />
+        <Stat value={String(lessons)} label="Leçons" />
         <Stat value="0" label="Méditations" />
       </View>
 
