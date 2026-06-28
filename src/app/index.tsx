@@ -1,98 +1,98 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
+import { Card } from '@/components/card';
+import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { citationDuJour } from '@/content/citations';
+import { Fonts, Radius, Spacing } from '@/constants/theme';
+import { useTheme } from '@/hooks/use-theme';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
+function salutation(date = new Date()): string {
+  const h = date.getHours();
+  if (h < 12) return 'Bonjour';
+  if (h < 18) return 'Bon après-midi';
+  return 'Bonsoir';
 }
 
-export default function HomeScreen() {
+/** Rituel suggéré selon l'heure (matin avant 12h, sinon soir). */
+function rituelDuMoment(date = new Date()) {
+  return date.getHours() < 14
+    ? {
+        glyph: '🌅',
+        title: 'Rituel du matin',
+        subtitle: 'Préparer la journée : anticiper les obstacles, fixer une intention vertueuse.',
+      }
+    : {
+        glyph: '🌙',
+        title: 'Rituel du soir',
+        subtitle: "Examen de conscience : qu'ai-je bien fait ? que puis-je corriger demain ?",
+      };
+}
+
+export default function AccueilScreen() {
+  const theme = useTheme();
+  const citation = citationDuJour();
+  const rituel = rituelDuMoment();
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+    <Screen
+      title="Sous le portique"
+      subtitle={`${salutation()} — un pas de plus vers la sagesse.`}
+      intro={
+        <View
+          style={[
+            styles.citation,
+            { backgroundColor: theme.accentSoft, borderColor: theme.border },
+          ]}>
+          <ThemedText style={styles.citationLabel} themeColor="textSecondary">
+            CITATION DU JOUR
           </ThemedText>
-        </ThemedView>
+          <ThemedText style={[styles.citationText, { fontFamily: Fonts.serif, color: theme.text }]}>
+            « {citation.texte} »
+          </ThemedText>
+          <ThemedText themeColor="textSecondary" type="small">
+            — {citation.auteur}, {citation.oeuvre} ({citation.ref})
+          </ThemedText>
+        </View>
+      }>
+      <ThemedText style={styles.sectionTitle}>Aujourd&apos;hui</ThemedText>
+      <Card glyph={rituel.glyph} title={rituel.title} subtitle={rituel.subtitle} badge="Commencer" />
 
-        <ThemedText type="code" style={styles.code}>
-          get started
+      <Card
+        glyph="📿"
+        title="Méditation guidée du jour"
+        subtitle="Vue d'en haut — 5 min"
+        badge="Premium"
+        locked
+      />
+
+      <View style={styles.streak}>
+        <ThemedText themeColor="textSecondary" type="small">
+          Série en cours
         </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        <ThemedText style={[styles.streakValue, { color: theme.accent }]}>0 jour</ThemedText>
+        <ThemedText themeColor="textSecondary" type="small">
+          Commence un rituel pour démarrer ta série.
+        </ThemedText>
+      </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  citation: {
+    borderRadius: Radius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
+    padding: Spacing.four,
+    gap: Spacing.two,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
+  citationLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1 },
+  citationText: { fontSize: 20, lineHeight: 28, fontWeight: '500' },
+  sectionTitle: { fontSize: 18, fontWeight: '600' },
+  streak: {
     alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
+    gap: Spacing.half,
     paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
   },
+  streakValue: { fontSize: 28, fontWeight: '700' },
 });
