@@ -74,11 +74,13 @@ export default function AccueilScreen() {
       />
 
       <Card
-        glyph="📿"
-        title="Méditation guidée du jour"
-        subtitle="Vue d'en haut — 5 min"
-        badge="Premium"
-        locked
+        glyph="🍃"
+        title="Méditation du jour"
+        subtitle="Ancrage dans l'instant — 3 min"
+        badge="Écouter"
+        onPress={() =>
+          router.push({ pathname: '/mediter/[meditationId]', params: { meditationId: 'instant' } })
+        }
       />
 
       <View style={styles.streak}>

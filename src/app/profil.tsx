@@ -21,7 +21,7 @@ function Stat({ value, label }: { value: string; label: string }) {
 
 export default function ProfilScreen() {
   const theme = useTheme();
-  const { lessons } = useTotals();
+  const { lessons, meditations } = useTotals();
 
   return (
     <Screen title="Profil" subtitle="Ta progression et tes réglages.">
@@ -29,7 +29,7 @@ export default function ProfilScreen() {
         style={[styles.stats, { backgroundColor: theme.backgroundElement, borderColor: theme.border }]}>
         <Stat value="0" label="Série (jours)" />
         <Stat value={String(lessons)} label="Leçons" />
-        <Stat value="0" label="Méditations" />
+        <Stat value={String(meditations)} label="Méditations" />
       </View>
 
       <Card

@@ -15,8 +15,11 @@ function lessonKey(moduleId: string, lessonId: string) {
 type ProgressState = {
   completedLessons: Record<string, true>;
   quizScores: Record<string, number>; // moduleId -> meilleur score (0..1)
+  meditationsDone: Record<string, true>; // meditationId -> true (au moins une fois)
+  meditationSessions: number; // nombre total de séances de méditation
   markLessonComplete: (moduleId: string, lessonId: string) => void;
   setQuizScore: (moduleId: string, score: number) => void;
+  markMeditationDone: (meditationId: string) => void;
   reset: () => void;
 };
 
@@ -25,6 +28,8 @@ export const useProgress = create<ProgressState>()(
     (set) => ({
       completedLessons: {},
       quizScores: {},
+      meditationsDone: {},
+      meditationSessions: 0,
       markLessonComplete: (moduleId, lessonId) =>
         set((s) => ({
           completedLessons: { ...s.completedLessons, [lessonKey(moduleId, lessonId)]: true },
@@ -36,7 +41,13 @@ export const useProgress = create<ProgressState>()(
             [moduleId]: Math.max(score, s.quizScores[moduleId] ?? 0),
           },
         })),
-      reset: () => set({ completedLessons: {}, quizScores: {} }),
+      markMeditationDone: (meditationId) =>
+        set((s) => ({
+          meditationsDone: { ...s.meditationsDone, [meditationId]: true },
+          meditationSessions: s.meditationSessions + 1,
+        })),
+      reset: () =>
+        set({ completedLessons: {}, quizScores: {}, meditationsDone: {}, meditationSessions: 0 }),
     }),
     {
       name: 'slp-progress',
@@ -63,6 +74,9 @@ export function useModuleProgress(moduleId: string): { done: number; total: numb
 }
 
 /** Totaux pour l'écran Profil. */
-export function useTotals(): { lessons: number } {
-  return useProgress((s) => ({ lessons: Object.keys(s.completedLessons).length }));
+export function useTotals(): { lessons: number; meditations: number } {
+  return useProgress((s) => ({
+    lessons: Object.keys(s.completedLessons).length,
+    meditations: s.meditationSessions,
+  }));
 }
