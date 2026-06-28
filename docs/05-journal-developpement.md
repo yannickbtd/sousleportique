@@ -75,8 +75,24 @@
 
 ---
 
+## Sprint 5 — Onboarding, rappels & streak ✅
+
+**Réalisé :**
+- **Onboarding** (`src/components/onboarding.tsx`) : 4 slides de valeur + écran de **consentement RGPD** (analytics opt-in, journal local chiffré, pas de compte) + questionnaire (objectif + rappels). Affiché tant que non complété (gate dans `_layout`).
+- **Préférences persistées** (`src/store/settings.ts`) : `onboarded`, `objectif`, `analytics`, `reminders` ; hydratation gérée (`onRehydrateStorage`) pour le routage initial.
+- **Notifications locales** (`src/lib/notifications.ts`, `expo-notifications`) : rappels quotidiens matin/soir, demande de permission, canal Android, reprogrammation à chaque changement (effet dans `_layout`).
+- **Écran de réglage des rappels** (Profil → Rappels) + éditeur réutilisable (`src/components/reminder-editor.tsx`, toggles + créneaux horaires).
+- **Série (streak) réelle** : jours d'activité enregistrés à chaque leçon/quiz/méditation/entrée de journal (`activeDays` + `useStreak` dans le store progress) ; affichée sur Accueil & Profil.
+- Profil converti en **stack** (index + rappels).
+
+**Dépendances ajoutées :** `expo-notifications` (plugin auto). **Caveat** : notifications limitées sur Expo Go (SDK 53+) — pleinement fonctionnelles en dev/prod build.
+
+**Qualité :** `tsc` clean ✅ · `expo lint` clean ✅ · `expo export` (iOS) sans erreur ✅.
+
+---
+
 ## Prochains sprints (cf. planning §5 du rapport)
-- S5 Onboarding + notifications + dashboard/streak réels
+- S6 Paywall + RevenueCat + CMS Supabase
 - S4 Méditer (lecteur audio + offline + respiration animée)
 - S5 Onboarding + notifications + dashboard/streak réels
 - S6 Paywall + RevenueCat + CMS Supabase
